@@ -7,15 +7,18 @@
 import React, { memo } from 'react';
 
 /*
-*Next steps: Arbitrage of colors from EUI pallette
+*Next steps: 
+    1. Arbitrage of colors from EUI pallette
+    2. Use a color library
 */
 const enum ColorTypes  {
-  Warning="yellow",
-  Danger="red",
-  OK="hsla(83, 56%, 61%, 1)",
-  Attention="orange",
-  Enabled="blue",
-  Disabled="grey",
+  Warning="hsl(62, 100%, 51%)",
+  Danger="hsl(0, 85%, 57%)",
+  OK="hsl(83, 56%, 61%)",
+  OK_Dark="hsl(83, 26%, 61%)",
+  Attention="hsl(32, 100%, 51%)",
+  Enabled="hsl(0, 0%, 100%)",
+  Disabled="hsl(0, 0%, 85%)",
 }
 
 
@@ -23,6 +26,13 @@ const enum ColorTypes  {
 const PaintServers = memo(()=>
     <>
         <linearGradient id="OK_userSpaceNWtoSE_DarkenBy30"
+                      x1="-50" y1="-50"
+                      x2="50" y2="50"
+                      spreadMethod="pad" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color={ColorTypes.OK} stop-opacity="1"/>
+            <stop offset="100%" stop-color={ColorTypes.OK_Dark} stop-opacity="1"/>
+        </linearGradient>
+        <linearGradient id="OK_userSpaceNWtoSE_Solid"
                       x1="-50" y1="-50"
                       x2="50" y2="50"
                       spreadMethod="pad" gradientUnits="userSpaceOnUse">
