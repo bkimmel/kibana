@@ -129,6 +129,7 @@ export const ProcessEventDot = styled(
           viewBox="-15 -15 90 30"
           preserveAspectRatio="xMidYMid meet"
           role="treeitem"
+          tabIndex={0}
           aria-level={event.data_buffer.depth}
         >
           <use
@@ -195,15 +196,19 @@ export const ProcessEventDot = styled(
   white-space: nowrap;
   contain: strict;
   will-change: left, top, width, height;
-  
+
   .cube {
-    transform: scale(1);
+    transform: scaleY(1);
     transition-property: transform;
-    transition-duration: .1s;
+    transition-duration: 0.1s;
+    transform-origin: 50% 30%;
+    transition-timing-function: ease-out;
   }
   :active .cube {
-    transform: scale(.8);
+    transform: scaleY(0.9);
     transition-property: transform;
-    transition-duration: .1s;
+    transition-duration: 0.1s;
+    transform-origin: 50% 30%;
+    transition-timing-function: ease-out;
   }
 `;
