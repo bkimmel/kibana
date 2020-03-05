@@ -139,6 +139,7 @@ export const ProcessEventDot = styled(
             width={markerSize(magFactorX)}
             height={markerSize(magFactorX)}
             opacity="1"
+            className="cube"
           />
           <use
             role="presentation"
@@ -194,4 +195,15 @@ export const ProcessEventDot = styled(
   white-space: nowrap;
   contain: strict;
   will-change: left, top, width, height;
+  
+  .cube {
+    transform: scale(1);
+    transition-property: transform;
+    transition-duration: .1s;
+  }
+  :active .cube {
+    transform: scale(.8);
+    transition-property: transform;
+    transition-duration: .1s;
+  }
 `;
