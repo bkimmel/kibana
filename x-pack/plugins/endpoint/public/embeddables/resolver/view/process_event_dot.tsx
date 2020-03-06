@@ -7,6 +7,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { i18n } from '@kbn/i18n';
+import { htmlIdGenerator, EuiKeyboardAccessible } from '@elastic/eui';
 import { applyMatrix3 } from '../lib/vector2';
 import { Vector2, ProcessEvent, Matrix3 } from '../types';
 import { SymbolIds, NamedColors, PaintServerIds } from './defs';
@@ -24,8 +25,8 @@ const nodeAssets = {
     cubeSymbol: `#${SymbolIds.runningTriggerCube}`,
     labelFill: `url(#${PaintServerIds.runningTrigger})`,
     descriptionFill: NamedColors.activeWarning,
-    labelText: i18n.translate('xpack.endpoint.resolver.runningProcess', {
-      defaultMessage: 'Running Process',
+    labelText: i18n.translate('xpack.endpoint.resolver.runningTrigger', {
+      defaultMessage: 'Running Trigger',
     }),
   },
   terminatedProcessCube: {
@@ -40,8 +41,8 @@ const nodeAssets = {
     cubeSymbol: `#${SymbolIds.terminatedTriggerCube}`,
     labelFill: NamedColors.fullLabelBackground,
     descriptionFill: NamedColors.inertDescription,
-    labelText: i18n.translate('xpack.endpoint.resolver.terminatedProcess', {
-      defaultMessage: 'Terminated Process',
+    labelText: i18n.translate('xpack.endpoint.resolver.terminatedTrigger', {
+      defaultMessage: 'Terminated Trigger',
     }),
   },
 };
@@ -120,73 +121,92 @@ export const ProcessEventDot = styled(
         }
       })(event?.data_buffer);
 
+      const clickTargetRef: { current: SVGAnimationElement | null } = React.createRef();
       const { cubeSymbol, labelFill, descriptionFill, labelText } = nodeAssets[nodeType];
-
+      const outerId = htmlIdGenerator()();
       return (
-        <svg
-          className={className}
-          style={nodeViewportStyle}
-          viewBox="-15 -15 90 30"
-          preserveAspectRatio="xMidYMid meet"
-          role="treeitem"
-          tabIndex={0}
-          aria-level={event.data_buffer.depth}
-        >
-          <use
-            role="presentation"
-            xlinkHref={cubeSymbol}
-            x={markerPositionOffset(magFactorX)}
-            y={markerPositionOffset(magFactorX)}
-            width={markerSize(magFactorX)}
-            height={markerSize(magFactorX)}
-            opacity="1"
-            className="cube"
-          />
-          <use
-            role="presentation"
-            xlinkHref={`#${SymbolIds.processNode}`}
-            x={markerPositionOffset(magFactorX) + markerSize(magFactorX) - 0.5}
-            y={labelYOffset(magFactorX)}
-            width={(markerSize(magFactorX) / 1.7647) * 5}
-            height={markerSize(magFactorX) / 1.7647}
-            opacity="1"
-            fill={labelFill}
-          />
-          <text
-            x={markerPositionOffset(magFactorX) + 0.7 * markerSize(magFactorX) + 50 / 2}
-            y={labelYOffset(magFactorX) + labelYHeight(magFactorX) / 2}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="3.75"
-            fontWeight="bold"
-            fill={NamedColors.empty}
-            paintOrder="stroke"
-            tabIndex={-1}
-            style={{ letterSpacing: '-0.02px' }}
+        <EuiKeyboardAccessible>
+          <svg
+            className={className}
+            viewBox="-15 -15 90 30"
+            preserveAspectRatio="xMidYMid meet"
+            role="treeitem"
+            id={outerId}
+            aria-level={event.data_buffer.depth}
+            style={nodeViewportStyle}
+            onClick={() => {
+              if (clickTargetRef.current !== null) {
+                (clickTargetRef.current as any).beginElement();
+              }
+            }}
           >
-            {event?.data_buffer?.process_name}
-          </text>
-          <text
-            x={markerPositionOffset(magFactorX) + markerSize(magFactorX)}
-            y={labelYOffset(magFactorX) - 1}
-            textAnchor="start"
-            dominantBaseline="middle"
-            fontSize="2.67"
-            fill={descriptionFill}
-            paintOrder="stroke"
-            fontWeight="bold"
-            style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
-          >
-            {labelText}
-          </text>
-        </svg>
+            <use
+              role="presentation"
+              xlinkHref={cubeSymbol}
+              x={markerPositionOffset(magFactorX)}
+              y={markerPositionOffset(magFactorX)}
+              width={markerSize(magFactorX)}
+              height={markerSize(magFactorX)}
+              opacity="1"
+              className="cube"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                values="1 1; 1 .8; 1 1"
+                dur=".2s"
+                begin="click"
+                repeatCount="1"
+                className="squish"
+                ref={clickTargetRef}
+              />
+            </use>
+            <use
+              id="animation-target-ddd"
+              role="presentation"
+              xlinkHref={`#${SymbolIds.processNode}`}
+              x={markerPositionOffset(magFactorX) + markerSize(magFactorX) - 0.5}
+              y={labelYOffset(magFactorX)}
+              width={(markerSize(magFactorX) / 1.7647) * 5}
+              height={markerSize(magFactorX) / 1.7647}
+              opacity="1"
+              fill={labelFill}
+            />
+            <text
+              x={markerPositionOffset(magFactorX) + 0.7 * markerSize(magFactorX) + 50 / 2}
+              y={labelYOffset(magFactorX) + labelYHeight(magFactorX) / 2}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="3.75"
+              fontWeight="bold"
+              fill={NamedColors.empty}
+              paintOrder="stroke"
+              tabIndex={-1}
+              style={{ letterSpacing: '-0.02px' }}
+            >
+              {event?.data_buffer?.process_name}
+            </text>
+            <text
+              x={markerPositionOffset(magFactorX) + markerSize(magFactorX)}
+              y={labelYOffset(magFactorX) - 1}
+              textAnchor="start"
+              dominantBaseline="middle"
+              fontSize="2.67"
+              fill={descriptionFill}
+              paintOrder="stroke"
+              fontWeight="bold"
+              style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
+            >
+              {labelText}
+            </text>
+          </svg>
+        </EuiKeyboardAccessible>
       );
     }
   )
 )`
   position: absolute;
   display: block;
-
   text-align: left;
   font-size: 10px;
   user-select: none;
@@ -194,21 +214,9 @@ export const ProcessEventDot = styled(
   border-radius: 10%;
   padding: 4px;
   white-space: nowrap;
-  contain: strict;
   will-change: left, top, width, height;
 
-  .cube {
-    transform: scaleY(1);
-    transition-property: transform;
-    transition-duration: 0.1s;
-    transform-origin: 50% 30%;
-    transition-timing-function: ease-out;
-  }
-  :active .cube {
-    transform: scaleY(0.9);
-    transition-property: transform;
-    transition-duration: 0.1s;
-    transform-origin: 50% 30%;
-    transition-timing-function: ease-out;
+  svg {
+    outline: 1px solid red;
   }
 `;
