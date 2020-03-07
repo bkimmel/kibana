@@ -151,10 +151,11 @@ export const ProcessEventDot = styled(
               className="cube"
             >
               <animateTransform
+                attributeType="XML"
                 attributeName="transform"
                 type="scale"
                 values="1 1; 1 .8; 1 1"
-                dur=".2s"
+                dur="0.2s"
                 begin="click"
                 repeatCount="1"
                 className="squish"
