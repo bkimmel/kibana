@@ -43,7 +43,8 @@ export const Resolver = styled(
 
     return (
       <div data-test-subj="resolverEmbeddable" className={className}>
-        <div className="resolver-graph" onMouseDown={onMouseDown} ref={ref}>
+        {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
+        <div className="resolver-graph" onMouseDown={onMouseDown} ref={ref} role="tree">
           {edgeLineSegments.map(([startPosition, endPosition], index) => (
             <EdgeLine
               key={index}

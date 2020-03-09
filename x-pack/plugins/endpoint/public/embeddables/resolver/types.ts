@@ -22,6 +22,21 @@ export interface ResolverState {
    * Contains the state associated with event data (process events and possibly other event types).
    */
   readonly data: DataState;
+
+  /**
+   * Contains the state needed to maintain Resolver UI elements.
+   */
+  readonly ui: ResolverUIState;
+}
+
+/**
+ * Piece of redux state that models an animation for the camera.
+ */
+export interface ResolverUIState {
+  /**
+   * The ID attribute of the resolver's aria-activedescendent.
+   */
+  readonly activeDescendentId: string | null;
 }
 
 /**

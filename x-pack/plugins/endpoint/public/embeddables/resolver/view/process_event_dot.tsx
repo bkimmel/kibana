@@ -11,13 +11,14 @@ import { htmlIdGenerator, EuiKeyboardAccessible } from '@elastic/eui';
 import { applyMatrix3 } from '../lib/vector2';
 import { Vector2, ProcessEvent, Matrix3 } from '../types';
 import { SymbolIds, NamedColors, PaintServerIds } from './defs';
+import { useResolverDispatch } from './use_resolver_dispatch';
 
 const nodeAssets = {
   runningProcessCube: {
     cubeSymbol: `#${SymbolIds.runningProcessCube}`,
     labelFill: `url(#${PaintServerIds.runningProcess})`,
     descriptionFill: NamedColors.activeNoWarning,
-    labelText: i18n.translate('xpack.endpoint.resolver.runningProcess', {
+    descriptionText: i18n.translate('xpack.endpoint.resolver.runningProcess', {
       defaultMessage: 'Running Process',
     }),
   },
@@ -25,7 +26,7 @@ const nodeAssets = {
     cubeSymbol: `#${SymbolIds.runningTriggerCube}`,
     labelFill: `url(#${PaintServerIds.runningTrigger})`,
     descriptionFill: NamedColors.activeWarning,
-    labelText: i18n.translate('xpack.endpoint.resolver.runningTrigger', {
+    descriptionText: i18n.translate('xpack.endpoint.resolver.runningTrigger', {
       defaultMessage: 'Running Trigger',
     }),
   },
@@ -33,7 +34,7 @@ const nodeAssets = {
     cubeSymbol: `#${SymbolIds.terminatedProcessCube}`,
     labelFill: NamedColors.fullLabelBackground,
     descriptionFill: NamedColors.inertDescription,
-    labelText: i18n.translate('xpack.endpoint.resolver.terminatedProcess', {
+    descriptionText: i18n.translate('xpack.endpoint.resolver.terminatedProcess', {
       defaultMessage: 'Terminated Process',
     }),
   },
@@ -41,7 +42,7 @@ const nodeAssets = {
     cubeSymbol: `#${SymbolIds.terminatedTriggerCube}`,
     labelFill: NamedColors.fullLabelBackground,
     descriptionFill: NamedColors.inertDescription,
-    labelText: i18n.translate('xpack.endpoint.resolver.terminatedTrigger', {
+    descriptionText: i18n.translate('xpack.endpoint.resolver.terminatedTrigger', {
       defaultMessage: 'Terminated Trigger',
     }),
   },
@@ -122,8 +123,26 @@ export const ProcessEventDot = styled(
       })(event?.data_buffer);
 
       const clickTargetRef: { current: SVGAnimationElement | null } = React.createRef();
-      const { cubeSymbol, labelFill, descriptionFill, labelText } = nodeAssets[nodeType];
-      const outerId = htmlIdGenerator()();
+      const { cubeSymbol, labelFill, descriptionFill, descriptionText } = nodeAssets[nodeType];
+      const resolverNodeIdGenerator = htmlIdGenerator('resolverNode');
+      const [nodeId, labelId, descriptionId] = [
+        ...(function*() {
+          for (let n = 3; n--; ) {
+            yield resolverNodeIdGenerator();
+          }
+        })(),
+      ] as string[];
+
+      const dispatch = useResolverDispatch();
+      const handleFocus = () => {
+        dispatch({
+          type: 'userFocusedOnResolverNode',
+          payload: {
+            nodeId,
+          },
+        });
+      };
+
       return (
         <EuiKeyboardAccessible>
           <svg
@@ -131,14 +150,18 @@ export const ProcessEventDot = styled(
             viewBox="-15 -15 90 30"
             preserveAspectRatio="xMidYMid meet"
             role="treeitem"
-            id={outerId}
             aria-level={event.data_buffer.depth}
+            aria-labelledby={labelId}
+            aria-describedby={descriptionId}
+            aria-haspopup={'true'}
             style={nodeViewportStyle}
+            id={nodeId}
             onClick={() => {
               if (clickTargetRef.current !== null) {
                 (clickTargetRef.current as any).beginElement();
               }
             }}
+            onFocus={handleFocus}
           >
             <use
               role="presentation"
@@ -184,6 +207,7 @@ export const ProcessEventDot = styled(
               paintOrder="stroke"
               tabIndex={-1}
               style={{ letterSpacing: '-0.02px' }}
+              id={labelId}
             >
               {event?.data_buffer?.process_name}
             </text>
@@ -194,11 +218,12 @@ export const ProcessEventDot = styled(
               dominantBaseline="middle"
               fontSize="2.67"
               fill={descriptionFill}
+              id={descriptionId}
               paintOrder="stroke"
               fontWeight="bold"
               style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
             >
-              {labelText}
+              {descriptionText}
             </text>
           </svg>
         </EuiKeyboardAccessible>
