@@ -25,13 +25,19 @@ const StyledPanel = styled(Panel)`
   max-width: 50%;
 `;
 
-const bgColor = NamedColors.resolverBackground;
-
 const StyledGraphControls = styled(GraphControls)`
   position: absolute;
   top: 5px;
   right: 5px;
 `;
+
+const StyledResolverContainer = styled.div`
+  display: flex;
+  flex-grow: 1;
+  contain: layout;
+`;
+
+const bgColor = NamedColors.resolverBackground;
 
 export const Resolver = styled(
   React.memo(function Resolver({ className }: { className?: string }) {
@@ -43,8 +49,7 @@ export const Resolver = styled(
 
     return (
       <div data-test-subj="resolverEmbeddable" className={className}>
-        {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
-        <div className="resolver-graph" onMouseDown={onMouseDown} ref={ref} role="tree">
+        <StyledResolverContainer className="resolver-graph kbn-resetFocusState" onMouseDown={onMouseDown} ref={ref} role="tree" tabIndex={0}>
           {edgeLineSegments.map(([startPosition, endPosition], index) => (
             <EdgeLine
               key={index}
@@ -61,7 +66,7 @@ export const Resolver = styled(
               event={processEvent}
             />
           ))}
-        </div>
+        </StyledResolverContainer>
         <StyledPanel />
         <StyledGraphControls />
         <SymbolDefinitions />
@@ -69,6 +74,9 @@ export const Resolver = styled(
     );
   })
 )`
+  &:focus {
+    border: 1px solid red;
+  }
   /**
    * Take up all availble space
    */
@@ -87,9 +95,4 @@ export const Resolver = styled(
   overflow: hidden;
   contain: content;
   background-color: ${bgColor};
-
-  .resolver-graph {
-    display: flex;
-    flex-grow: 1;
-  }
 `;
