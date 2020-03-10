@@ -49,7 +49,13 @@ export const Resolver = styled(
 
     return (
       <div data-test-subj="resolverEmbeddable" className={className}>
-        <StyledResolverContainer className="resolver-graph kbn-resetFocusState" onMouseDown={onMouseDown} ref={ref} role="tree" tabIndex={0}>
+        <StyledResolverContainer
+          className="resolver-graph kbn-resetFocusState"
+          onMouseDown={onMouseDown}
+          ref={ref}
+          role="tree"
+          tabIndex={0}
+        >
           {edgeLineSegments.map(([startPosition, endPosition], index) => (
             <EdgeLine
               key={index}

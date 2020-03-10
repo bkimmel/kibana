@@ -134,13 +134,14 @@ export const ProcessEventDot = styled(
       ] as string[];
 
       const dispatch = useResolverDispatch();
-      const handleFocus = () => {
+      const handleFocus = (focusEvent: React.FocusEvent<SVGSVGElement>) => {
         dispatch({
           type: 'userFocusedOnResolverNode',
           payload: {
             nodeId,
           },
         });
+        focusEvent.currentTarget.setAttribute('aria-current', 'true');
       };
 
       return (
@@ -156,7 +157,7 @@ export const ProcessEventDot = styled(
             aria-haspopup={'true'}
             style={nodeViewportStyle}
             id={nodeId}
-            onClick={() => {
+            onClick={(clickEvent: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
               if (clickTargetRef.current !== null) {
                 (clickTargetRef.current as any).beginElement();
               }
@@ -164,68 +165,69 @@ export const ProcessEventDot = styled(
             onFocus={handleFocus}
             tabIndex={-1}
           >
-            <use
-              role="presentation"
-              xlinkHref={cubeSymbol}
-              x={markerPositionOffset(magFactorX)}
-              y={markerPositionOffset(magFactorX)}
-              width={markerSize(magFactorX)}
-              height={markerSize(magFactorX)}
-              opacity="1"
-              className="cube"
-            >
-              <animateTransform
-                attributeType="XML"
-                attributeName="transform"
-                type="scale"
-                values="1 1; 1 .8; 1 1"
-                dur="0.2s"
-                begin="click"
-                repeatCount="1"
-                className="squish"
-                ref={clickTargetRef}
+            <g>
+              <use
+                role="presentation"
+                xlinkHref={cubeSymbol}
+                x={markerPositionOffset(magFactorX)}
+                y={markerPositionOffset(magFactorX)}
+                width={markerSize(magFactorX)}
+                height={markerSize(magFactorX)}
+                opacity="1"
+                className="cube"
+              >
+                <animateTransform
+                  attributeType="XML"
+                  attributeName="transform"
+                  type="scale"
+                  values="1 1; 1 .83; 1 .8; 1 .83; 1 1"
+                  dur="0.2s"
+                  begin="click"
+                  repeatCount="1"
+                  className="squish"
+                  ref={clickTargetRef}
+                />
+              </use>
+              <use
+                role="presentation"
+                xlinkHref={`#${SymbolIds.processNode}`}
+                x={markerPositionOffset(magFactorX) + markerSize(magFactorX) - 0.5}
+                y={labelYOffset(magFactorX)}
+                width={(markerSize(magFactorX) / 1.7647) * 5}
+                height={markerSize(magFactorX) / 1.7647}
+                opacity="1"
+                fill={labelFill}
               />
-            </use>
-            <use
-              id="animation-target-ddd"
-              role="presentation"
-              xlinkHref={`#${SymbolIds.processNode}`}
-              x={markerPositionOffset(magFactorX) + markerSize(magFactorX) - 0.5}
-              y={labelYOffset(magFactorX)}
-              width={(markerSize(magFactorX) / 1.7647) * 5}
-              height={markerSize(magFactorX) / 1.7647}
-              opacity="1"
-              fill={labelFill}
-            />
-            <text
-              x={markerPositionOffset(magFactorX) + 0.7 * markerSize(magFactorX) + 50 / 2}
-              y={labelYOffset(magFactorX) + labelYHeight(magFactorX) / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize="3.75"
-              fontWeight="bold"
-              fill={NamedColors.empty}
-              paintOrder="stroke"
-              tabIndex={-1}
-              style={{ letterSpacing: '-0.02px' }}
-              id={labelId}
-            >
-              {event?.data_buffer?.process_name}
-            </text>
-            <text
-              x={markerPositionOffset(magFactorX) + markerSize(magFactorX)}
-              y={labelYOffset(magFactorX) - 1}
-              textAnchor="start"
-              dominantBaseline="middle"
-              fontSize="2.67"
-              fill={descriptionFill}
-              id={descriptionId}
-              paintOrder="stroke"
-              fontWeight="bold"
-              style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
-            >
-              {descriptionText}
-            </text>
+              <text
+                x={markerPositionOffset(magFactorX) + 0.7 * markerSize(magFactorX) + 50 / 2}
+                y={labelYOffset(magFactorX) + labelYHeight(magFactorX) / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="3.75"
+                fontWeight="bold"
+                fill={NamedColors.empty}
+                paintOrder="stroke"
+                tabIndex={-1}
+                style={{ letterSpacing: '-0.02px' }}
+                id={labelId}
+              >
+                {event?.data_buffer?.process_name}
+              </text>
+              <text
+                x={markerPositionOffset(magFactorX) + markerSize(magFactorX)}
+                y={labelYOffset(magFactorX) - 1}
+                textAnchor="start"
+                dominantBaseline="middle"
+                fontSize="2.67"
+                fill={descriptionFill}
+                id={descriptionId}
+                paintOrder="stroke"
+                fontWeight="bold"
+                style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
+              >
+                {descriptionText}
+              </text>
+            </g>
           </svg>
         </EuiKeyboardAccessible>
       );
