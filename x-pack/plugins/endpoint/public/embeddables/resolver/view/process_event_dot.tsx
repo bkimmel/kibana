@@ -147,7 +147,7 @@ export const ProcessEventDot = styled(
       return (
         <EuiKeyboardAccessible>
           <svg
-            className={className + ` kbn-resetFocusState`}
+            className={className}
             viewBox="-15 -15 90 30"
             preserveAspectRatio="xMidYMid meet"
             role="treeitem"
