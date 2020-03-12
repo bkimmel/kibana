@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { i18n } from '@kbn/i18n';
 import { htmlIdGenerator, EuiKeyboardAccessible } from '@elastic/eui';
 import { applyMatrix3 } from '../lib/vector2';
-import { Vector2, ProcessEvent, Matrix3 } from '../types';
+import { Vector2, ProcessEvent, Matrix3, AdjacentProcessMap } from '../types';
 import { SymbolIds, NamedColors, PaintServerIds } from './defs';
 import { useResolverDispatch } from './use_resolver_dispatch';
 
@@ -58,6 +58,7 @@ export const ProcessEventDot = styled(
       position,
       event,
       projectionMatrix,
+      adjacentNodeMap,
     }: {
       /**
        * A `className` string provided by `styled`
@@ -75,6 +76,10 @@ export const ProcessEventDot = styled(
        * projectionMatrix which can be used to convert `position` to screen coordinates.
        */
       projectionMatrix: Matrix3;
+      /**
+       * map of what nodes are "adjacent" to this one in "up, down, previous, next" directions
+       */
+      adjacentNodeMap?: AdjacentProcessMap;
     }) => {
       /**
        * Convert the position, which is in 'world' coordinates, to screen coordinates.
@@ -82,6 +87,8 @@ export const ProcessEventDot = styled(
       const [left, top] = applyMatrix3(position, projectionMatrix);
 
       const [magFactorX] = projectionMatrix;
+
+      const selfId = adjacentNodeMap?.self;
 
       const nodeViewportStyle = {
         left: `${left}px`,
@@ -126,8 +133,9 @@ export const ProcessEventDot = styled(
       const { cubeSymbol, labelFill, descriptionFill, descriptionText } = nodeAssets[nodeType];
       const resolverNodeIdGenerator = htmlIdGenerator('resolverNode');
       const [nodeId, labelId, descriptionId] = [
+        !!selfId ? resolverNodeIdGenerator(String(selfId)) : resolverNodeIdGenerator(),
         ...(function*() {
-          for (let n = 3; n--; ) {
+          for (let n = 2; n--; ) {
             yield resolverNodeIdGenerator();
           }
         })(),
@@ -155,6 +163,7 @@ export const ProcessEventDot = styled(
             aria-labelledby={labelId}
             aria-describedby={descriptionId}
             aria-haspopup={'true'}
+            data-down={adjacentNodeMap?.down}
             style={nodeViewportStyle}
             id={nodeId}
             onClick={(clickEvent: React.MouseEvent<SVGSVGElement, MouseEvent>) => {

@@ -45,6 +45,8 @@ export const Resolver = styled(
       selectors.processNodePositionsAndEdgeLineSegments
     );
 
+    const { processToAdjacencyMap } = useSelector(selectors.processAdjacencies);
+
     const { projectionMatrix, ref, onMouseDown } = useCamera();
 
     return (
@@ -70,6 +72,7 @@ export const Resolver = styled(
               position={position}
               projectionMatrix={projectionMatrix}
               event={processEvent}
+              adjacentNodeMap={processToAdjacencyMap.get(processEvent)}
             />
           ))}
         </StyledResolverContainer>

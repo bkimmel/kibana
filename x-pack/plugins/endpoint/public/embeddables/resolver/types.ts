@@ -193,6 +193,18 @@ export interface ProcessEvent {
 }
 
 /**
+ * A map of Process Ids that indicate which processes are adjacent to a given process along
+ * directions in two axes: up/down and previous/next.
+ */
+export interface AdjacentProcessMap {
+  readonly self: number;
+  up: number | null;
+  down: number | null;
+  previous: number | null;
+  next: number | null;
+}
+
+/**
  * A represention of a process tree with indices for O(1) access to children and values by id.
  */
 export interface IndexedProcessTree {
@@ -204,6 +216,10 @@ export interface IndexedProcessTree {
    * Map of ID to process
    */
   idToProcess: Map<number, ProcessEvent>;
+  /**
+   * Map of ID to adjacent processes
+   */
+  idToAdjacent: Map<number, AdjacentProcessMap>;
 }
 
 /**
