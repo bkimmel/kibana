@@ -46,7 +46,12 @@ export const Resolver = styled(
     );
 
     const { processToAdjacencyMap } = useSelector(selectors.processAdjacencies);
-
+    const activeId = useSelector(selectors.resolverActiveDescendantId);
+    const activeDescendantAttribute = activeId
+      ? {
+          'aria-activedescendant': activeId,
+        }
+      : {};
     const { projectionMatrix, ref, onMouseDown } = useCamera();
 
     return (
@@ -57,6 +62,7 @@ export const Resolver = styled(
           ref={ref}
           role="tree"
           tabIndex={0}
+          {...activeDescendantAttribute}
         >
           {edgeLineSegments.map(([startPosition, endPosition], index) => (
             <EdgeLine

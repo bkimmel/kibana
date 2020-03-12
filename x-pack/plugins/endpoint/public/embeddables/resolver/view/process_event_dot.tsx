@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { i18n } from '@kbn/i18n';
 import { htmlIdGenerator, EuiKeyboardAccessible } from '@elastic/eui';
@@ -142,15 +142,18 @@ export const ProcessEventDot = styled(
       ] as string[];
 
       const dispatch = useResolverDispatch();
-      const handleFocus = (focusEvent: React.FocusEvent<SVGSVGElement>) => {
-        dispatch({
-          type: 'userFocusedOnResolverNode',
-          payload: {
-            nodeId,
-          },
-        });
-        focusEvent.currentTarget.setAttribute('aria-current', 'true');
-      };
+      const handleFocus = useCallback(
+        (focusEvent: React.FocusEvent<SVGSVGElement>) => {
+          dispatch({
+            type: 'userFocusedOnResolverNode',
+            payload: {
+              nodeId,
+            },
+          });
+          focusEvent.currentTarget.setAttribute('aria-current', 'true');
+        },
+        [dispatch, nodeId]
+      );
 
       return (
         <EuiKeyboardAccessible>

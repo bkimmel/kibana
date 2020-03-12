@@ -60,6 +60,13 @@ export const processAdjacencies = composeSelectors(
 );
 
 /**
+ * Active descendant: The last node that had focus
+ */
+export const resolverActiveDescendantId = composeSelectors(uiStateSelector, uiState => {
+  return uiState.activeDescendentId;
+});
+
+/**
  * Returns the camera state from within ResolverState
  */
 function cameraStateSelector(state: ResolverState) {
@@ -71,6 +78,13 @@ function cameraStateSelector(state: ResolverState) {
  */
 function dataStateSelector(state: ResolverState) {
   return state.data;
+}
+
+/**
+ * Returns the UI state from within ResolverState
+ */
+function uiStateSelector(state: ResolverState) {
+  return state.ui;
 }
 
 /**
