@@ -13,6 +13,8 @@ import { Vector2, ProcessEvent, Matrix3, AdjacentProcessMap } from '../types';
 import { SymbolIds, NamedColors, PaintServerIds } from './defs';
 import { useResolverDispatch } from './use_resolver_dispatch';
 
+export const resolverNodeIdGenerator = htmlIdGenerator('resolverNode');
+
 const nodeAssets = {
   runningProcessCube: {
     cubeSymbol: `#${SymbolIds.runningProcessCube}`,
@@ -131,7 +133,7 @@ export const ProcessEventDot = styled(
 
       const clickTargetRef: { current: SVGAnimationElement | null } = React.createRef();
       const { cubeSymbol, labelFill, descriptionFill, descriptionText } = nodeAssets[nodeType];
-      const resolverNodeIdGenerator = htmlIdGenerator('resolverNode');
+
       const [nodeId, labelId, descriptionId] = [
         !!selfId ? resolverNodeIdGenerator(String(selfId)) : resolverNodeIdGenerator(),
         ...(function*() {
@@ -151,6 +153,7 @@ export const ProcessEventDot = styled(
             },
           });
           focusEvent.currentTarget.setAttribute('aria-current', 'true');
+          focusEvent.stopPropagation();
         },
         [dispatch, nodeId]
       );

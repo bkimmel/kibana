@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as selectors from '../store/selectors';
@@ -52,6 +52,20 @@ export const Resolver = styled(
           'aria-activedescendant': activeId,
         }
       : {};
+    const handleFocus = useCallback(
+      (focusEvent: React.FocusEvent<HTMLElement>) => {
+        if (typeof activeId === 'string') {
+          const activeElement = document.getElementById(activeId);
+
+          if (activeElement instanceof Element) {
+            return document.activeElement === activeElement
+              ? true
+              : activeElement.focus({ preventScroll: true });
+          }
+        }
+      },
+      [activeId]
+    );
     const { projectionMatrix, ref, onMouseDown } = useCamera();
 
     return (
@@ -62,6 +76,7 @@ export const Resolver = styled(
           ref={ref}
           role="tree"
           tabIndex={0}
+          onFocus={handleFocus}
           {...activeDescendantAttribute}
         >
           {edgeLineSegments.map(([startPosition, endPosition], index) => (
