@@ -17,6 +17,7 @@ import { useResolverDispatch } from './use_resolver_dispatch';
 import * as eventModel from '../../../../common/models/event';
 import * as processModel from '../models/process_event';
 import * as selectors from '../store/selectors';
+import { EventLabelText } from './event_label_text';
 
 const nodeAssets = {
   runningProcessCube: {
@@ -156,8 +157,12 @@ export const ProcessEventDot = styled(
         return nodeId === selectedDescendantId;
       }, [selectedDescendantId, nodeId]);
 
-      const dispatch = useResolverDispatch();
+      // const eventName = eventModel.eventName(event);
+      const eventName = useMemo(() => {
+        return 'a'.repeat(Math.floor(Math.random() * 40));
+      }, []);
 
+      const dispatch = useResolverDispatch();
       const handleFocus = useCallback(
         (focusEvent: React.FocusEvent<SVGSVGElement>) => {
           dispatch({
@@ -250,21 +255,14 @@ export const ProcessEventDot = styled(
                 opacity="1"
                 fill={labelFill}
               />
-              <text
+              <EventLabelText
                 x={markerPositionOffset + 0.7 * markerSize + 50 / 2}
                 y={labelYOffset + labelYHeight / 2}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="3.75"
-                fontWeight="bold"
+                labelId={labelId}
                 fill={NamedColors.empty}
-                paintOrder="stroke"
-                tabIndex={-1}
-                style={{ letterSpacing: '-0.02px' }}
-                id={labelId}
-              >
-                {eventModel.eventName(event)}
-              </text>
+                eventName={eventName}
+                ellipsisAtUTFCharNum={21}
+              />
               <text
                 x={markerPositionOffset + markerSize}
                 y={labelYOffset - 1}
