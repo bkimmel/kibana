@@ -159,7 +159,7 @@ export const ProcessEventDot = styled(
 
       // const eventName = eventModel.eventName(event);
       const eventName = useMemo(() => {
-        return 'a'.repeat(Math.floor(Math.random() * 40));
+        return '💩'.repeat(Math.floor(Math.random() * 40));
       }, []);
 
       const dispatch = useResolverDispatch();
@@ -261,7 +261,8 @@ export const ProcessEventDot = styled(
                 labelId={labelId}
                 fill={NamedColors.empty}
                 eventName={eventName}
-                ellipsisAtUTFCharNum={21}
+                ellipsisAtUTFCharNum={20}
+                adjustAtWidth={(markerSize / 1.7647) * 5}
               />
               <text
                 x={markerPositionOffset + markerSize}
@@ -295,6 +296,7 @@ export const ProcessEventDot = styled(
   white-space: nowrap;
   will-change: left, top, width, height;
   contain: strict;
+
 
   & .backing {
     stroke-dasharray: 500;

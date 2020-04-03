@@ -14,6 +14,7 @@ export const EventLabelText = React.memo(
     y,
     fill,
     labelId,
+    adjustAtWidth,
   }: {
     eventName: string;
     ellipsisAtUTFCharNum: number;
@@ -21,9 +22,11 @@ export const EventLabelText = React.memo(
     y: number;
     fill: string;
     labelId: string;
+    adjustAtWidth?: number;
   }) => {
-    const eventNameUTFlength = ((eventName || '').match(/./gu) || []).length;
-    const eventNameOverflow = eventNameUTFlength >= ellipsisAtUTFCharNum;
+    const eventNameUTFChars = ((eventName || '').match(/./gu) || []);
+    const eventNameUTFLength = eventNameUTFChars.length;
+    const eventNameOverflow = eventNameUTFLength >= ellipsisAtUTFCharNum;
     return eventNameOverflow ? (
       <text
         x={x}
@@ -38,8 +41,10 @@ export const EventLabelText = React.memo(
         style={{ letterSpacing: '-0.02px' }}
         id={labelId}
         aria-label={eventName}
+        textLength={adjustAtWidth}
+        lengthAdjust={ adjustAtWidth ? 'spacingAndGlyphs' : undefined }
       >
-        {eventName.slice(0, Math.max(0, ellipsisAtUTFCharNum - 3)) + `…`}
+        {eventNameUTFChars.slice(0, Math.max(0, ellipsisAtUTFCharNum - 3)).join('') + `…`}
       </text>
     ) : (
       <text
