@@ -154,7 +154,7 @@ export const ProcessEventDot = styled(
       const dispatch = useResolverDispatch();
 
       const handleFocus = useCallback(
-        (focusEvent: React.FocusEvent<SVGSVGElement>) => {
+        (focusEvent: React.FocusEvent<HTMLDivElement>) => {
           dispatch({
             type: 'userFocusedOnResolverNode',
             payload: {
@@ -166,7 +166,7 @@ export const ProcessEventDot = styled(
       );
 
       const handleClick = useCallback(
-        (clickEvent: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        (clickEvent: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
           if (animationTarget.current !== null) {
             (animationTarget.current as any).beginElement();
           }
@@ -179,14 +179,12 @@ export const ProcessEventDot = styled(
         },
         [animationTarget, dispatch, nodeId]
       );
-
+      /* eslint-disable jsx-a11y/click-events-have-key-events */
       return (
         <EuiKeyboardAccessible>
-          <svg
+          <div
             data-test-subj={'resolverNode'}
             className={className + ' kbn-resetFocusState'}
-            viewBox="-15 -15 90 30"
-            preserveAspectRatio="xMidYMid meet"
             role="treeitem"
             aria-level={adjacentNodeMap.level}
             aria-flowto={
@@ -203,81 +201,101 @@ export const ProcessEventDot = styled(
             onFocus={handleFocus}
             tabIndex={-1}
           >
-            <g>
-              <use
-                xlinkHref={`#${SymbolIds.processCubeActiveBacking}`}
-                x={-11.35}
-                y={-11.35}
-                width={markerSize * 1.5}
-                height={markerSize * 1.5}
-                className="backing"
-              />
-              <rect x="7" y="-12.75" width="15" height="10" fill={NamedColors.resolverBackground} />
-              <use
-                role="presentation"
-                xlinkHref={cubeSymbol}
-                x={markerPositionOffset}
-                y={markerPositionOffset}
-                width={markerSize}
-                height={markerSize}
-                opacity="1"
-                className="cube"
-              >
-                <animateTransform
-                  attributeType="XML"
-                  attributeName="transform"
-                  type="scale"
-                  values="1 1; 1 .83; 1 .8; 1 .83; 1 1"
-                  dur="0.2s"
-                  begin="click"
-                  repeatCount="1"
-                  className="squish"
-                  ref={animationTarget}
+            <svg
+              viewBox="-15 -15 90 30"
+              preserveAspectRatio="xMidYMid meet"
+              style={{
+                display: 'block',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: '0',
+                left: '0',
+              }}
+            >
+              <g>
+                <use
+                  xlinkHref={`#${SymbolIds.processCubeActiveBacking}`}
+                  x={-11.35}
+                  y={-11.35}
+                  width={markerSize * 1.5}
+                  height={markerSize * 1.5}
+                  className="backing"
                 />
-              </use>
-              <use
-                role="presentation"
-                xlinkHref={`#${SymbolIds.processNodeLabel}`}
-                x={markerPositionOffset + markerSize - 0.5}
-                y={labelYOffset}
-                width={(markerSize / 1.7647) * 5}
-                height={markerSize / 1.7647}
-                opacity="1"
-                fill={labelFill}
-              />
-              <text
-                x={markerPositionOffset + 0.7 * markerSize + 50 / 2}
-                y={labelYOffset + labelYHeight / 2}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="3.75"
-                fontWeight="bold"
-                fill={NamedColors.empty}
-                paintOrder="stroke"
-                tabIndex={-1}
-                style={{ letterSpacing: '-0.02px' }}
-                id={labelId}
-              >
-                {eventModel.eventName(event)}
-              </text>
-              <text
-                x={markerPositionOffset + markerSize}
-                y={labelYOffset - 1}
-                textAnchor="start"
-                dominantBaseline="middle"
-                fontSize="2.67"
-                fill={descriptionFill}
-                id={descriptionId}
-                paintOrder="stroke"
-                fontWeight="bold"
-                style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
-              >
-                {descriptionText}
-              </text>
-            </g>
-          </svg>
+                <rect
+                  x="7"
+                  y="-12.75"
+                  width="15"
+                  height="10"
+                  fill={NamedColors.resolverBackground}
+                />
+                <use
+                  role="presentation"
+                  xlinkHref={cubeSymbol}
+                  x={markerPositionOffset}
+                  y={markerPositionOffset}
+                  width={markerSize}
+                  height={markerSize}
+                  opacity="1"
+                  className="cube"
+                >
+                  <animateTransform
+                    attributeType="XML"
+                    attributeName="transform"
+                    type="scale"
+                    values="1 1; 1 .83; 1 .8; 1 .83; 1 1"
+                    dur="0.2s"
+                    begin="click"
+                    repeatCount="1"
+                    className="squish"
+                    ref={animationTarget}
+                  />
+                </use>
+                <use
+                  role="presentation"
+                  xlinkHref={`#${SymbolIds.processNodeLabel}`}
+                  x={markerPositionOffset + markerSize - 0.5}
+                  y={labelYOffset}
+                  width={(markerSize / 1.7647) * 5}
+                  height={markerSize / 1.7647}
+                  opacity="1"
+                  fill={labelFill}
+                />
+                <text
+                  x={markerPositionOffset + 0.7 * markerSize + 50 / 2}
+                  y={labelYOffset + labelYHeight / 2}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize="3.75"
+                  fontWeight="bold"
+                  fill={NamedColors.empty}
+                  paintOrder="stroke"
+                  tabIndex={-1}
+                  style={{ letterSpacing: '-0.02px' }}
+                  id={labelId}
+                >
+                  {eventModel.eventName(event)}
+                </text>
+                <text
+                  x={markerPositionOffset + markerSize}
+                  y={labelYOffset - 1}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  fontSize="2.67"
+                  fill={descriptionFill}
+                  id={descriptionId}
+                  paintOrder="stroke"
+                  fontWeight="bold"
+                  style={{ textTransform: 'uppercase', letterSpacing: '-0.01px' }}
+                >
+                  {descriptionText}
+                </text>
+              </g>
+            </svg>
+          </div>
         </EuiKeyboardAccessible>
       );
+      /* eslint-enable jsx-a11y/click-events-have-key-events */
     }
   )
 )`
