@@ -89,6 +89,17 @@ const NodeSubMenu = React.memo(
       }
     | { menuAction: () => unknown; optionsWithActions?: undefined }
   )) => {
+    const handleOptionChange = useCallback((newOptions)=>{ console.log('reset options'); },[]);
+    const handleClickOnButton = useCallback(
+      (clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log('click')
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+        typeof menuAction === 'function' && menuAction();
+      },
+      [menuAction]
+    )
+    const [options, setOptions] = useState([{ label: 'abc'}, { label: 'def'}]);
     if (!optionsWithActions && typeof menuAction === 'function') {
       /**
        * When called with a `menuAction`
@@ -96,14 +107,7 @@ const NodeSubMenu = React.memo(
        */
       return (
         <EuiButton
-          onClick={useCallback(
-            (clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              clickEvent.preventDefault();
-              clickEvent.stopPropagation();
-              menuAction();
-            },
-            [menuAction]
-          )}
+          onClick={handleClickOnButton}
           color="ghost"
           size="s"
           tabIndex={-1}
@@ -114,39 +118,25 @@ const NodeSubMenu = React.memo(
     } else {
       
       const OptionList = ()=>{
-        const [options, setOptions] = useState([{ label: 'abc'}, { label: 'def'}]);
-        return useMemo(()=>(
-        <EuiSelectable 
-          singleSelection={true} 
-          options={options}
-          onChange={(newOptions)=>{ console.log('reset options'); setOptions(newOptions); }}
+        
+        return (
+          <EuiButton
+          onClick={handleClickOnButton}
+          color="ghost"
+          size="s"
+          tabIndex={-1}
         >
-          {list=>list}
-        </EuiSelectable>
-        ),[options])
+          {menuTitle+'aaa'}
+        </EuiButton>
+        
+        )
     }
       /**
        * When called with a set of `optionsWithActions`:
        * Render with a panel of options that appear when the menu host button is clicked
        */
       return (
-        <>
-        <EuiButton
-          onClick={useCallback((clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            clickEvent.preventDefault();
-            clickEvent.stopPropagation();
-          }, [])}
-          color="ghost"
-          size="s"
-          iconType="arrowDown"
-          iconSide="right"
-          tabIndex={-1}
-        >
-          {menuTitle}
-          
-        </EuiButton>
         <OptionList />
-        </>
       );
     }
   }
@@ -412,15 +402,16 @@ export const ProcessEventDot = styled(
               {magFactorX >= 2 && (
                 <EuiFlexGroup justifyContent="flexStart" gutterSize="xs">
                   <EuiFlexItem grow={false}>
-                    <NodeSubMenu
-                      menuTitle={subMenuAssets.relatedEvents.title}
-                      optionsWithActions={[{ optionTitle: 'a', action: () => {} }]}
-                    />
-                  </EuiFlexItem>
-                  <EuiFlexItem grow={false}>
+                    
                     <NodeSubMenu
                       menuTitle={subMenuAssets.relatedAlerts.title}
                       menuAction={() => {}}
+                    />
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                  <NodeSubMenu
+                      menuTitle={subMenuAssets.relatedEvents.title}
+                      optionsWithActions={[{ optionTitle: 'a', action: () => {} }]}
                     />
                   </EuiFlexItem>
                 </EuiFlexGroup>
