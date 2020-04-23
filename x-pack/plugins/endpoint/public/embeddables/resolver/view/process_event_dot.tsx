@@ -73,6 +73,28 @@ const subMenuAssets = {
   },
 };
 
+const OptionList = React.memo(()=>{
+  const handleClickOnButton = useCallback(
+    (clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      console.log('click')
+      clickEvent.preventDefault();
+      clickEvent.stopPropagation();
+    },
+    []
+  )
+  return (
+    <EuiButton
+    onClick={handleClickOnButton}
+    color="ghost"
+    size="s"
+    tabIndex={-1}
+  >
+    {'aaaaa'}
+  </EuiButton>
+  
+  )
+});
+
 const NodeSubMenu = React.memo(
   ({
     menuTitle,
@@ -117,20 +139,7 @@ const NodeSubMenu = React.memo(
       );
     } else {
       
-      const OptionList = ()=>{
-        
-        return (
-          <EuiButton
-          onClick={handleClickOnButton}
-          color="ghost"
-          size="s"
-          tabIndex={-1}
-        >
-          {menuTitle+'aaa'}
-        </EuiButton>
-        
-        )
-    }
+      
       /**
        * When called with a set of `optionsWithActions`:
        * Render with a panel of options that appear when the menu host button is clicked
@@ -402,7 +411,9 @@ export const ProcessEventDot = styled(
               {magFactorX >= 2 && (
                 <EuiFlexGroup justifyContent="flexStart" gutterSize="xs">
                   <EuiFlexItem grow={false}>
-                    
+                    {/**
+                     * LITERALLY ONLY DIFFERENCE IS PROPS
+                     */}
                     <NodeSubMenu
                       menuTitle={subMenuAssets.relatedAlerts.title}
                       menuAction={() => {}}
