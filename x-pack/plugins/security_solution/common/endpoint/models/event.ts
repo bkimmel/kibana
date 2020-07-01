@@ -79,6 +79,25 @@ export function primaryEventCategory(event: ResolverEvent): string | undefined {
 }
 
 /**
+ * Return the full array of ecs event categories for the event
+ * 
+ * @param event {ResolverEvent} The event to get the category for
+ */
+export function allEventCategories(event: ResolverEvent): string[] {
+  if (isLegacyEvent(event)) {
+    const legacyFullType = event.endgame.event_type_full;
+    if (legacyFullType) {
+      return [legacyFullType];
+    }
+  } else {
+    const ecsCategories = event.event.category;
+    const categories = typeof ecsCategories === 'string' ? [ecsCategories] : ecsCategories;
+    return categories;
+  }
+  return [];
+}
+
+/**
  * ECS event type will be things like 'creation', 'deletion', 'access', etc.
  * see: https://www.elastic.co/guide/en/ecs/current/ecs-event.html
  * @param event The ResolverEvent to get the ecs type for

@@ -120,6 +120,7 @@ export const relatedEventsStats: (
  * returns a map of entity_ids to related event data.
  */
 export function relatedEventsByEntityId(data: DataState): Map<string, ResolverRelatedEvents> {
+  console.log('data.related', data.relatedEvents);
   return data.relatedEvents;
 }
 
@@ -182,6 +183,8 @@ export const relatedEventInfoByEntityId = createSelector(
     relatedEventsStats
     /* eslint-enable no-shadow */
   ) {
+    console.log('rev', relatedEventsStats);
+    console.log('rbe', [...relatedEventsByEntityId.keys()]);
     const relatedEventInfoEntries = [...(relatedEventsStats || new Map()).entries()].map(
       ([entityId, stats]) => {
         const eventsResponseForThisEntry = relatedEventsByEntityId.get(entityId);
@@ -203,6 +206,7 @@ export const relatedEventInfoByEntityId = createSelector(
          * @param eventCategory {string} The ECS category like 'file','dns',etc.
          */
         const getMatchingEventsForCategory = (eventCategory: string): ResolverEvent[] => {
+          console.log('resp', eventsResponseForThisEntry);
           if (!eventsResponseForThisEntry) {
             return [];
           }

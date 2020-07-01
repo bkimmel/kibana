@@ -11,6 +11,8 @@ import {
   ResolverLifecycleNode,
 } from '../../../common/endpoint/types';
 import { uniquePidForProcess } from './process_event';
+import { allEventCategories } from '../../../common/endpoint/models/event';
+
 
 /**
  * ResolverTree is a type returned by the server.
@@ -59,6 +61,7 @@ export function relatedEventsStats(tree: ResolverTree): Map<string, ResolverNode
  */
 export function mock({
   events,
+  relatedEvents,
   cursors = { childrenNextChild: null, ancestryNextAncestor: null },
 }: {
   /**
@@ -66,10 +69,15 @@ export function mock({
    */
   events: ResolverEvent[];
   /**
+   * Events represented by the ResolverTree.
+   */
+  relatedEvents?: ResolverEvent[];
+  /**
    * Optionally provide cursors for the 'children' and 'ancestry' edges.
    */
   cursors?: { childrenNextChild: string | null; ancestryNextAncestor: string | null };
 }): ResolverTree | null {
+  console.log('model related', relatedEvents);
   if (events.length === 0) {
     return null;
   }
@@ -83,7 +91,7 @@ export function mock({
     },
     // Required
     relatedEvents: {
-      events: [],
+      events: relatedEvents || [],
       nextEvent: null,
     },
     // Required
@@ -101,9 +109,18 @@ export function mock({
     lifecycle: events,
     // Required
     stats: {
-      events: {
+      events: relatedEvents ? {
+        total: relatedEvents.length,
+        byCategory: relatedEvents.map(allEventCategories).reduce((agg, cats)=>{
+          let next: Record<string, number> = {...agg};
+          for(const category of cats){
+            next[category] = next[category] ? next[category] + 1 : 1;
+          }
+          return next;
+         },{}),
+      } : {
         total: 0,
-        byCategory: {},
+        byCategory: {}
       },
       totalAlerts: 0,
     },
