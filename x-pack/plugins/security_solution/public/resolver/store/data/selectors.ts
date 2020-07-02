@@ -120,7 +120,6 @@ export const relatedEventsStats: (
  * returns a map of entity_ids to related event data.
  */
 export function relatedEventsByEntityId(data: DataState): Map<string, ResolverRelatedEvents> {
-  console.log('data.related', data.relatedEvents);
   return data.relatedEvents;
 }
 

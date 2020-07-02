@@ -9,9 +9,10 @@ import {
   ResolverEvent,
   ResolverNodeStats,
   ResolverLifecycleNode,
+  ResolverRelatedEvents,
 } from '../../../common/endpoint/types';
 import { uniquePidForProcess } from './process_event';
-import { allEventCategories } from '../../../common/endpoint/models/event';
+import { allEventCategories, entityId } from '../../../common/endpoint/models/event';
 
 
 /**
@@ -91,7 +92,7 @@ export function mock({
     },
     // Required
     relatedEvents: {
-      events: relatedEvents || [],
+      events: [],
       nextEvent: null,
     },
     // Required

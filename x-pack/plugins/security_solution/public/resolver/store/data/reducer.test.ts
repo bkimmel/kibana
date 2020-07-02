@@ -22,13 +22,17 @@ describe('Resolver Data Middleware', () => {
   });
 
   describe('when a Resolver tree is returned from the server with more related events than the API can support', ()=>{
-    let originId: string;
+    let firstChildId: string;
+    let firstChildRelatedEvents = [];
     beforeEach(() => {
       const generator = new EndpointDocGenerator('seed');
       const baseTree = generator.generateTree({ ancestors: 1, generations: 2, children: 2, relatedEvents: 2, percentWithRelated: 100 });
       const events = baseTree.allEvents;
       console.log('evts', events[0].process.entity_id)
-      originId = events[0].process.entity_id;
+      
+      let firstChild = [...baseTree.children.values()][0];
+      firstChildId = firstChild.id;
+      firstChildRelatedEvents = firstChild.relatedEvents;
       const relateds = [...baseTree.ancestry.values(), ...baseTree.children.values()].map((treeNode)=>{
         return treeNode.relatedEvents
       }).flat(); 
@@ -58,15 +62,27 @@ describe('Resolver Data Middleware', () => {
           },
         };
         store.dispatch(action);
+        const relatedEventsAction: DataAction = {
+          type: 'serverReturnedRelatedEventData',
+          payload: {
+            entityID: firstChildId,
+            events: firstChildRelatedEvents,
+            nextEvent: null,
+          },
+        };
+        store.dispatch(relatedEventsAction);
       }
     });
 
     it('should be sane', () => {
       const relatedInfoById = selectors.relatedEventInfoByEntityId(store.getState());
-      const infoForOrigin = relatedInfoById.get(originId);
-      const numDisplayed = infoForOrigin?.getNumberActuallyDisplayedForCategory('file');
-      infoForOrigin?.getNumberNotDisplayedForCategory('file');
-      console.log('origin:', infoForOrigin?.getNumberActuallyDisplayedForCategory('file'));
+      console.log('relatedInfoAll', relatedInfoById);
+      const infoForFirstChild = relatedInfoById.get(firstChildId);
+      console.log('1st child:', firstChildId);
+      console.log('info @ 1st', infoForFirstChild);
+      // const numDisplayed = infoForFirstChild?.getNumberActuallyDisplayedForCategory('file');
+      // infoForFirstChild?.getNumberNotDisplayedForCategory('file');
+      //console.log('firstchild:', infoForOrigin?.getNumberActuallyDisplayedForCategory('file'));
       expect(1).toBe(1);
       //expect(selectors.relatedEventInfoByEntityId(store.getState())).toBe(1);
     });
