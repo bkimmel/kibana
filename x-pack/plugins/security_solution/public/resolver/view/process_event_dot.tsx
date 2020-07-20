@@ -231,10 +231,10 @@ const UnstyledProcessEventDot = React.memo(
       dispatch({
         type: 'userFocusedOnResolverNode',
         payload: {
-          nodeId: nodeHTMLID(nodeID),
+          nodeId: nodeID,
         },
       });
-    }, [dispatch, nodeHTMLID, nodeID]);
+    }, [dispatch, nodeID]);
 
     const handleRelatedEventRequest = useCallback(() => {
       dispatch({

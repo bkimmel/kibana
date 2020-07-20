@@ -4,7 +4,6 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 import { Reducer, combineReducers } from 'redux';
-import { htmlIdGenerator } from '@elastic/eui';
 import { animateProcessIntoView } from './methods';
 import { cameraReducer } from './camera/reducer';
 import { dataReducer } from './data/reducer';
@@ -17,7 +16,6 @@ import { uniquePidForProcess } from '../models/process_event';
  * (i.e. it will return the same html id given the same prefix 'resolverNode'
  * and nodeId)
  */
-const resolverNodeIdGenerator = htmlIdGenerator('resolverNode');
 
 const uiReducer: Reducer<ResolverUIState, ResolverAction> = (
   uiState = {
@@ -48,11 +46,10 @@ const uiReducer: Reducer<ResolverUIState, ResolverAction> = (
      * html id of the node being brought into view.
      */
     const processEntityId = uniquePidForProcess(action.payload.process);
-    const processNodeId = resolverNodeIdGenerator(processEntityId);
     return {
       ...uiState,
-      activeDescendantId: processNodeId,
-      selectedDescendantId: processNodeId,
+      activeDescendantId: processEntityId,
+      selectedDescendantId: processEntityId,
       processEntityIdOfSelectedDescendant: processEntityId,
     };
   } else {
