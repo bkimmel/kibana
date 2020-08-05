@@ -9,14 +9,14 @@ import { Simulator } from '../test_utilities/simulator';
 // Extend jest with a custom matcher
 import '../test_utilities/extend_jest';
 
+let simulator: Simulator;
+let databaseDocumentID: string;
+let entityIDs: { origin: string; firstChild: string; secondChild: string };
+
+// the resolver component instance ID, used by the react code to distinguish piece of global state from those used by other resolver instances
+const resolverComponentInstanceID = 'resolverComponentInstanceID';
+
 describe('Resolver, when analyzing a tree that has 1 ancestor and 2 children', () => {
-  let simulator: Simulator;
-  let databaseDocumentID: string;
-  let entityIDs: { origin: string; firstChild: string; secondChild: string };
-
-  // the resolver component instance ID, used by the react code to distinguish piece of global state from those used by other resolver instances
-  const resolverComponentInstanceID = 'resolverComponentInstanceID';
-
   beforeEach(async () => {
     // create a mock data access layer
     const { metadata: dataAccessLayerMetadata, dataAccessLayer } = oneAncestorTwoChildren();
@@ -79,6 +79,7 @@ describe('Resolver, when analyzing a tree that has 1 ancestor and 2 children', (
         simulator
           .processNodeElements({ entityID: entityIDs.secondChild })
           .find('button')
+          .first()
           .simulate('click');
       });
       it('should render the second child node as selected, and the first child not as not selected, and the query string should indicate that the second child is selected', async () => {
@@ -105,5 +106,85 @@ describe('Resolver, when analyzing a tree that has 1 ancestor and 2 children', (
         });
       });
     });
+  });
+});
+
+describe('Resolver, when analyzing a tree that has some related events', () => {
+  
+
+  beforeEach(async () => {
+    // create a mock data access layer with related events
+    const { metadata: dataAccessLayerMetadata, dataAccessLayer } = oneAncestorTwoChildren({withRelatedEvents: true});
+
+    // save a reference to the entity IDs exposed by the mock data layer
+    entityIDs = dataAccessLayerMetadata.entityIDs;
+
+    // save a reference to the `_id` supported by the mock data layer
+    databaseDocumentID = dataAccessLayerMetadata.databaseDocumentID;
+
+    // create a resolver simulator, using the data access layer and an arbitrary component instance ID
+    simulator = new Simulator({ databaseDocumentID, dataAccessLayer, resolverComponentInstanceID });
+  });
+
+  describe('when it has loaded', () => {
+    beforeEach(async () => {
+      await expect(
+        /**
+         * It's important that all of these are done in a single `expect`.
+         * If you do them concurrently with each other, you'll have incorrect results.
+         *
+         * For example, there might be no loading element at one point, and 1 graph element at one point, but never a single time when there is both 1 graph element and 0 loading elements.
+         */
+        simulator.mapStateTransitions(() => ({
+          graphElements: simulator.graphElement().length,
+          graphLoadingElements: simulator.graphLoadingElement().length,
+          graphErrorElements: simulator.graphErrorElement().length,
+          originNode: simulator.processNodeElements({ entityID: entityIDs.origin }).length,
+           }))
+      ).toYieldEqualTo({
+        graphElements: 1,
+        graphLoadingElements: 0,
+        graphErrorElements: 0,
+        originNode: 1,
+      });
+    });
+
+    it('should render a related events button', async () => {
+      await expect(
+        simulator.mapStateTransitions(() => ({
+          relatedEventButtons: simulator.processNodeRelatedEventButton(entityIDs.origin).length,
+        }))
+      ).toYieldEqualTo({
+        relatedEventButtons: 1,
+      });
+    })
+    // describe("when the origin node's 'related events' button been clicked", () => {
+    //   beforeEach(() => {
+    //     // Click the origin's "Related Events" button
+    //     simulator.clickRelatedEventsButtonForNode(entityIDs.origin);
+    //   });
+    //   // it('should render the list of related options to select', async () => {
+    //   //   simulator.updateWrapper();
+    //   //   simulator.debugWrapper();
+    //   //   await expect(
+    //   //     simulator.mapStateTransitions(function value() {
+    //   //       return {
+    //   //         // the query string has a key showing that the second child is selected
+    //   //         submenuOptions: simulator.processNodeSubmenuOptions().length,
+    //   //         graphLoadingElements: simulator.graphLoadingElement().length,
+    //   //         graphErrorElements: simulator.graphErrorElement().length,
+    //   //       };
+    //   //     })
+    //   //   ).toYieldEqualTo({
+    //   //     // Just the second child should be marked as selected in the query string
+    //   //     submenuOptions: 1,
+    //   //     graphLoadingElements: 0,
+    //   //     graphErrorElements: 0,
+    //   //   });
+
+        
+
+    //   // });
+    // });
   });
 });

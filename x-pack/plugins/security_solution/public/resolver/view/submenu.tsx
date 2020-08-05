@@ -65,15 +65,18 @@ const OptionList = React.memo(
         : subMenuOptions.map((opt: ResolverSubmenuOption): {
             label: string;
             prepend?: ReactNode;
+            "data-test-subj"?: string;
           } => {
             return opt.prefix
               ? {
                   label: opt.optionTitle,
                   prepend: <span>{opt.prefix} </span>,
+                  "data-test-subj": 'resolver:submenu:option',
                 }
               : {
                   label: opt.optionTitle,
                   prepend: <span />,
+                  "data-test-subj": 'resolver:submenu:option',
                 };
           })
     );
@@ -155,15 +158,18 @@ const NodeSubMenuComponents = React.memo(
     const [menuIsOpen, setMenuOpen] = useState(false);
     const handleMenuOpenClick = useCallback(
       (clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log('HANDLING MENU OPEN CLICK');
         // stopping propagation/default to prevent other node animations from triggering
         clickEvent.preventDefault();
         clickEvent.stopPropagation();
-        setMenuOpen(!menuIsOpen);
+        setMenuOpen(true);
+        console.log('HANDLED MENU OPEN CLICK')
       },
       [menuIsOpen]
     );
     const handleMenuActionClick = useCallback(
       (clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log('HANDLING MENU ACTION CLICK');
         // stopping propagation/default to prevent other node animations from triggering
         clickEvent.preventDefault();
         clickEvent.stopPropagation();
@@ -233,6 +239,7 @@ const NodeSubMenuComponents = React.memo(
         iconType={menuIsOpen ? 'arrowUp' : 'arrowDown'}
         iconSide="right"
         tabIndex={-1}
+        data-test-subj="resolver:submenu:button"
       >
         {count ? <EuiI18nNumber value={count} /> : ''} {menuTitle}
       </EuiButton>

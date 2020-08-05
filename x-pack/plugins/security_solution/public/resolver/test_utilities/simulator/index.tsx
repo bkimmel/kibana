@@ -220,6 +220,48 @@ export class Simulator {
     );
   }
 
+  public updateWrapper() {
+    this.wrapper.update();
+  }
+
+  public debugWrapper() {
+    console.log(this.wrapper.debug());
+  }
+
+  public clickRelatedEventsButtonForNode( entityID: string) {
+    this
+      .wrapper
+      .find('[data-test-subj="resolver:submenu:button"]')
+      .first()
+      .simulate('click', {preventDefault: ()=>{  }, stopPropagation: ()=>{}});
+
+    this
+      .wrapper
+      .find('[data-test-subj="resolver:submenu:button"]')
+      .last()
+      .simulate('click', {preventDefault: ()=>{  }, stopPropagation: ()=>{}});
+    this.wrapper.update();
+  }
+
+  public processNodeRelatedEventButton(entityID: string): ReactWrapper {
+    return this.processNodeElements({entityID}).findWhere((wrapper)=> typeof wrapper.type() === 'string' && wrapper.prop('data-test-subj') === 'resolver:submenu:button');
+  }
+
+  /**
+   * All options for open submenus of a particular node
+   */
+  public processNodeSubmenuOptions() {
+    // const pne = this.processNodeElements({entityID});
+    // const dn = pne.getDOMNode();
+    // console.log(dn.innerHTML);
+    const rso = this.findInDOM('[data-test-subj="resolver:submenu:option"]');
+    console.log('rso');
+    if(rso && rso.length > 0){
+      console.log(rso.getDOMNode().innerHTML)
+    }
+    return this.findInDOM('[data-test-subj="resolver:submenu:option"]');
+  }
+
   /**
    * Return the selected node query string values.
    */

@@ -10,7 +10,7 @@ import {
   ResolverEntityIndex,
 } from '../../../../common/endpoint/types';
 import { mockEndpointEvent } from '../../store/mocks/endpoint_event';
-import { mockTreeWithNoAncestorsAnd2Children } from '../../store/mocks/resolver_tree';
+import { mockTreeWithNoAncestorsAnd2Children, withRelatedEventsOnOrigin } from '../../store/mocks/resolver_tree';
 import { DataAccessLayer } from '../../types';
 
 interface Metadata {
@@ -40,11 +40,22 @@ interface Metadata {
 /**
  * A simple mock dataAccessLayer possible that returns a tree with 0 ancestors and 2 direct children. 1 related event is returned. The parameter to `entities` is ignored.
  */
-export function oneAncestorTwoChildren(): { dataAccessLayer: DataAccessLayer; metadata: Metadata } {
+export function oneAncestorTwoChildren({withRelatedEvents}:{withRelatedEvents: boolean} = {withRelatedEvents: false}): { dataAccessLayer: DataAccessLayer; metadata: Metadata } {
   const metadata: Metadata = {
     databaseDocumentID: '_id',
     entityIDs: { origin: 'origin', firstChild: 'firstChild', secondChild: 'secondChild' },
   };
+  let baseTree = mockTreeWithNoAncestorsAnd2Children({
+    originID: metadata.entityIDs.origin,
+    firstChildID: metadata.entityIDs.firstChild,
+    secondChildID: metadata.entityIDs.secondChild,
+  });
+  const composedTree = withRelatedEvents ? withRelatedEventsOnOrigin(baseTree, [['registry','access'],['registry','access'],['registry','access']]) : baseTree;
+  console.log('composed tree:')
+  console.log(composedTree);
+  if(composedTree?.stats?.events?.byCategory){
+    console.log(composedTree?.stats?.events?.byCategory);
+  }
   return {
     metadata,
     dataAccessLayer: {
@@ -54,7 +65,7 @@ export function oneAncestorTwoChildren(): { dataAccessLayer: DataAccessLayer; me
       relatedEvents(entityID: string): Promise<ResolverRelatedEvents> {
         return Promise.resolve({
           entityID,
-          events: [
+          events: (withRelatedEvents && entityID === metadata.entityIDs.origin) ? composedTree.relatedEvents.events : [
             mockEndpointEvent({
               entityID,
               name: 'event',
@@ -70,11 +81,7 @@ export function oneAncestorTwoChildren(): { dataAccessLayer: DataAccessLayer; me
        */
       resolverTree(): Promise<ResolverTree> {
         return Promise.resolve(
-          mockTreeWithNoAncestorsAnd2Children({
-            originID: metadata.entityIDs.origin,
-            firstChildID: metadata.entityIDs.firstChild,
-            secondChildID: metadata.entityIDs.secondChild,
-          })
+          composedTree
         );
       },
 
